@@ -19,6 +19,9 @@
   "homepage": "https://github.com/archways404/MAULazyTeams#readme",
   "dependencies": {
     "@js-temporal/polyfill": "^0.5.1",
-    "puppeteer": "^24.36.1"
+    "dotenv": "^17.2.4",
+    "otplib": "^13.2.1",
+    "puppeteer": "^24.36.1",
+    "totp-generator": "^2.0.1"
   }
 }

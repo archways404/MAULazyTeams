@@ -1,7 +1,14 @@
 import { Temporal } from "@js-temporal/polyfill";
+import dotenv from "dotenv";
 import puppeteer from "puppeteer";
+import { TOTP } from "totp-generator";
 
-async function fetchJWT(mau_id, pwd) {
+async function generateTOTP(mfa_secret) {
+	const full_token = await TOTP.generate(mfa_secret);
+	return full_token.otp;
+}
+
+async function fetchJWT(mau_id, pwd, mfa_secret) {
 	const browser = await puppeteer.launch({
 		headless: false,
 		defaultViewport: null,
@@ -80,15 +87,94 @@ async function fetchJWT(mau_id, pwd) {
 	// Click the button
 	await popup.click("#submitButton");
 
-	await popup.waitForSelector("#idRichContext_DisplaySign", {
-		timeout: 120000,
+	let errorVisible = false;
+
+	try {
+		await popup.waitForSelector("#idSpan_SAOTCS_Error_OTC", {
+			visible: true,
+			timeout: 6000,
+		});
+		errorVisible = true;
+	} catch (e) {
+		// selector never appeared → no error
+	}
+
+	if (errorVisible) {
+		console.log("Error message appeared – doing fallback logic");
+		// do something else
+	} else {
+		console.log("No error – continue normal flow");
+
+		await popup.waitForSelector("#idRichContext_DisplaySign", {
+			visible: true,
+			timeout: 12000,
+		});
+
+		await popup.waitForSelector("#signInAnotherWay", { visible: true });
+		console.log("found another way");
+		await popup.evaluate(() => {
+			document.querySelector("#signInAnotherWay")?.click();
+		});
+	}
+
+	// PRESS THE USE CODE BUTTON
+
+	const text = "Use a verification code";
+
+	await popup.waitForFunction(
+		(t) => {
+			return [...document.querySelectorAll('[role="button"]')].some((el) =>
+				el.innerText?.trim().includes(t),
+			);
+		},
+		{},
+		text,
+	);
+
+	await popup.evaluate((t) => {
+		const button = [...document.querySelectorAll('[role="button"]')].find(
+			(el) => el.innerText?.trim().includes(t),
+		);
+
+		button?.click();
+	}, text);
+
+	// INSERT CODE
+
+	console.log("looking for code input");
+	await popup.waitForFunction(() => {
+		const el = document.querySelector('input[placeholder="Code"]');
+		return el && !el.disabled;
 	});
 
+	console.log("found code input");
+
+	const mfa_code = await generateTOTP(mfa_secret);
+
+	console.log("MFA CODE:", mfa_code);
+
+	console.log("writing code");
+	await popup.type('input[placeholder="Code"]', mfa_code);
+	console.log("code written!");
+
+	//await page.click('input[type="submit"]');
+
+	console.log("looking for verify button");
+	await popup.evaluate(() => {
+		const btn = [...document.querySelectorAll("input, button")].find(
+			(el) => el.value === "Verify",
+		);
+		btn?.click();
+	});
+	console.log("verify button found and pressed!");
+
+	/*
 	const codeText = await popup.$eval(
 		"#idRichContext_DisplaySign",
 		(el) => el.textContent,
 	);
 	console.log("Displayed text:", codeText);
+	*/
 
 	// Wait until the popup is fully loaded
 	await popup.waitForNavigation({ waitUntil: "domcontentloaded" });
@@ -318,20 +404,22 @@ function sumFromFormattedStrings(formatted) {
 }
 
 function parseHoursToDecimal(timeString) {
-  const h = timeString.match(/(\d+)\s*h/);
-  const m = timeString.match(/(\d+)\s*m/);
+	const h = timeString.match(/(\d+)\s*h/);
+	const m = timeString.match(/(\d+)\s*m/);
 
-  const hours = h ? parseInt(h[1], 10) : 0;
-  const minutes = m ? parseInt(m[1], 10) : 0;
+	const hours = h ? parseInt(h[1], 10) : 0;
+	const minutes = m ? parseInt(m[1], 10) : 0;
 
-  return hours + minutes / 60;
+	return hours + minutes / 60;
 }
 
 async function main() {
-	const mau_id = "@mau.se";
-	const pwd = "?";
+	dotenv.config();
+	const mau_id = process.env.MAU_ID;
+	const pwd = process.env.PWD;
+	const mfa_secret = process.env.PWD;
 
-	const BearerToken = await fetchJWT(mau_id, pwd);
+	const BearerToken = await fetchJWT(mau_id, pwd, mfa_secret);
 	//const BearerToken ="";
 
 	const UserID = await graphRequestUserID(BearerToken);
@@ -356,18 +444,17 @@ async function main() {
 
 	console.log(thisMonthFormattedShifts.join("\n\n"));
 
-
 	const totalHoursStr = sumFromFormattedStrings(thisMonthFormattedShifts);
-    console.log(totalHoursStr); 
+	console.log(totalHoursStr);
 
-    const totalHours = parseHoursToDecimal(totalHoursStr);
+	const totalHours = parseHoursToDecimal(totalHoursStr);
 
-    const pretax = totalHours * 140;
-    const pretax_sem = pretax * 1.12;
-    const posttax = pretax_sem * 0.7;
+	const pretax = totalHours * 140;
+	const pretax_sem = pretax * 1.12;
+	const posttax = pretax_sem * 0.7;
 
-    console.log("pre-tax:", pretax_sem.toFixed(0) + 'kr');
-    console.log("post-tax:", posttax.toFixed(0) + 'kr');
+	console.log("pre-tax:", pretax_sem.toFixed(0) + "kr");
+	console.log("post-tax:", posttax.toFixed(0) + "kr");
 }
 
 main().catch(console.error);

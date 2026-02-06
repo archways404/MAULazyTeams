@@ -11,9 +11,18 @@ importers:
       '@js-temporal/polyfill':
         specifier: ^0.5.1
         version: 0.5.1
+      dotenv:
+        specifier: ^17.2.4
+        version: 17.2.4
+      otplib:
+        specifier: ^13.2.1
+        version: 13.2.1
       puppeteer:
         specifier: ^24.36.1
         version: 24.36.1
+      totp-generator:
+        specifier: ^2.0.1
+        version: 2.0.1
 
 packages:
 
@@ -29,10 +38,35 @@ packages:
     resolution: {integrity: sha512-hloP58zRVCRSpgDxmqCWJNlizAlUgJFqG2ypq79DCvyv9tHjRYMDOcPFjzfl/A1/YxDvRCZz8wvZvmapQnKwFQ==}
     engines: {node: '>=12'}
 
+  '@noble/hashes@2.0.1':
+    resolution: {integrity: sha512-XlOlEbQcE9fmuXxrVTXCTlG2nlRXa9Rj3rr5Ue/+tX+nmkgbX720YHh0VR3hBF9xDvwnb8D2shVGOwNx+ulArw==}
+    engines: {node: '>= 20.19.0'}
+
+  '@otplib/core@13.2.1':
+    resolution: {integrity: sha512-IyfHvYNCyipDxhmJdcUUvUeT3Hz84/GgM6G2G6BTEmnAKPzNA7U0kYGkxKZWY9h23W94RJk4qiClJRJN5zKGvg==}
+
+  '@otplib/hotp@13.2.1':
+    resolution: {integrity: sha512-iRKqvj0TnemtXXtEswzBX50Z0yMNa0lH9PSdr5N4CJc1mDEuUmFFZQqnu3PfA3fPd3WeAU+mHgmK/xq18+K1QA==}
+
+  '@otplib/plugin-base32-scure@13.2.1':
+    resolution: {integrity: sha512-vnA2qqgJ/FbFbDNGOLAS8dKfCsJFXwFsZKYklE8yl2INkCOUR0vbVdJ2TVmufzC8R1RRZHW+cDR20ACgc9XFYg==}
+
+  '@otplib/plugin-crypto-noble@13.2.1':
+    resolution: {integrity: sha512-Dxjmt4L+5eDWJf5EvbcMp+fxcliyKoB9N9sNQq/vuVAUvq+KiqpiiCQZ/wHyrN0ArB0NdevtK1KByyAq080ldg==}
+
+  '@otplib/totp@13.2.1':
+    resolution: {integrity: sha512-LzDzAAK3w8rspF3urBnWjOlxso1SCGxX9Pnu/iy+HkC0y0HgiLsW7jhkr2hJ3u4cyBdL/tOKUhhELwsjyvunwQ==}
+
+  '@otplib/uri@13.2.1':
+    resolution: {integrity: sha512-ssYnfiUrFTs/rPRUW8h59m0MVLYOC+UKk7tVGYgtG15lLaLBrNBQjM2YFanuzn9Jm4iv9JxiNG7TRkwcnyR09A==}
+
   '@puppeteer/browsers@2.11.2':
     resolution: {integrity: sha512-GBY0+2lI9fDrjgb5dFL9+enKXqyOPok9PXg/69NVkjW3bikbK9RQrNrI3qccQXmDNN7ln4j/yL89Qgvj/tfqrw==}
     engines: {node: '>=18'}
     hasBin: true
+
+  '@scure/base@2.0.0':
+    resolution: {integrity: sha512-3E1kpuZginKkek01ovG8krQ0Z44E3DHPjc5S2rjJw9lZn3KSQOs8S7wqikF/AH7iRanHypj85uGyxk0XAyC37w==}
 
   '@tootallnate/quickjs-emscripten@0.23.0':
     resolution: {integrity: sha512-C5Mc6rdnsaJDjO3UpGW/CQTHtCKaYlScZTly4JIu97Jxo/odCiH0ITnDXSJPTOrEKk/ycSZ0AOgTmkDtkOsvIA==}
@@ -164,6 +198,10 @@ packages:
   devtools-protocol@0.0.1551306:
     resolution: {integrity: sha512-CFx8QdSim8iIv+2ZcEOclBKTQY6BI1IEDa7Tm9YkwAXzEWFndTEzpTo5jAUhSnq24IC7xaDw0wvGcm96+Y3PEg==}
 
+  dotenv@17.2.4:
+    resolution: {integrity: sha512-mudtfb4zRB4bVvdj0xRo+e6duH1csJRM8IukBqfTRvHotn9+LBXB8ynAidP9zHqoRC/fsllXgk4kCKlR21fIhw==}
+    engines: {node: '>=12'}
+
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
 
@@ -261,6 +299,9 @@ packages:
   json-parse-even-better-errors@2.3.1:
     resolution: {integrity: sha512-xyFwyhro/JEof6Ghe2iz2NcXoj2sloNsWr/XsERDK/oiPCfaNhl5ONfp+jQdAZRQQ0IJWNzH9zIZF7li91kh2w==}
 
+  jssha@3.3.1:
+    resolution: {integrity: sha512-VCMZj12FCFMQYcFLPRm/0lOBbLi8uM2BhXPTqw3U4YAfs4AZfiApOoBLoN8cQE60Z50m1MYMTQVCfgF/KaCVhQ==}
+
   lines-and-columns@1.2.4:
     resolution: {integrity: sha512-7ylylesZQ/PV29jhEDl3Ufjo6ZX7gCqJr5F7PKrqc93v7fzSymt1BpwEU8nAUXs8qzzvqhbjhK5QZg6Mt/HkBg==}
 
@@ -280,6 +321,9 @@ packages:
 
   once@1.4.0:
     resolution: {integrity: sha512-lNaJgI+2Q5URQBkccEKHTQOPaXdUxnZZElQTZY0MFUAuaEqe1E+Nyvgdz/aIyNi6Z9MzO5dv1H8n58/GELp3+w==}
+
+  otplib@13.2.1:
+    resolution: {integrity: sha512-Cft9h/m34LtvnoB2TjP1E1E6v0biwcUntl6U4e+HgWrTa0bpwmb+u/D9gLFA+U6/ztlvrult0811Bu30nUVUuA==}
 
   pac-proxy-agent@7.2.0:
     resolution: {integrity: sha512-TEB8ESquiLMc0lV8vcd5Ql/JAKAoyzHFXaStwjkzpOpC5Yv+pIzLfHvjTSdf3vpa2bMiUQrg9i6276yn8666aA==}
@@ -375,6 +419,9 @@ packages:
   text-decoder@1.2.3:
     resolution: {integrity: sha512-3/o9z3X0X0fTupwsYvR03pJ/DjWuqqrfwBgTQzdWDiQSm9KitAyz/9WqsT2JQW7KV2m+bC2ol/zqpW37NHxLaA==}
 
+  totp-generator@2.0.1:
+    resolution: {integrity: sha512-50DiKmv9zKTPzCgWOqQYVBMvxh+tpL9O3IUFIqzGUlFXzJyb/IQZac8bonXudvLbfuDY8laZ9qTDX+yAvTBNSQ==}
+
   tslib@2.8.1:
     resolution: {integrity: sha512-oJFu94HQb+KVduSUQL7wnpmqnfmLsOA/nAh6b6EH0wCEoK0/mPeXU6c3wKDV83MkOuHPRHtSXKKU99IBazS/2w==}
 
@@ -438,6 +485,35 @@ snapshots:
     dependencies:
       jsbi: 4.3.2
 
+  '@noble/hashes@2.0.1': {}
+
+  '@otplib/core@13.2.1': {}
+
+  '@otplib/hotp@13.2.1':
+    dependencies:
+      '@otplib/core': 13.2.1
+      '@otplib/uri': 13.2.1
+
+  '@otplib/plugin-base32-scure@13.2.1':
+    dependencies:
+      '@otplib/core': 13.2.1
+      '@scure/base': 2.0.0
+
+  '@otplib/plugin-crypto-noble@13.2.1':
+    dependencies:
+      '@noble/hashes': 2.0.1
+      '@otplib/core': 13.2.1
+
+  '@otplib/totp@13.2.1':
+    dependencies:
+      '@otplib/core': 13.2.1
+      '@otplib/hotp': 13.2.1
+      '@otplib/uri': 13.2.1
+
+  '@otplib/uri@13.2.1':
+    dependencies:
+      '@otplib/core': 13.2.1
+
   '@puppeteer/browsers@2.11.2':
     dependencies:
       debug: 4.4.3
@@ -452,6 +528,8 @@ snapshots:
       - bare-buffer
       - react-native-b4a
       - supports-color
+
+  '@scure/base@2.0.0': {}
 
   '@tootallnate/quickjs-emscripten@0.23.0': {}
 
@@ -563,6 +641,8 @@ snapshots:
 
   devtools-protocol@0.0.1551306: {}
 
+  dotenv@17.2.4: {}
+
   emoji-regex@8.0.0: {}
 
   end-of-stream@1.4.5:
@@ -662,6 +742,8 @@ snapshots:
 
   json-parse-even-better-errors@2.3.1: {}
 
+  jssha@3.3.1: {}
+
   lines-and-columns@1.2.4: {}
 
   lru-cache@7.18.3: {}
@@ -675,6 +757,15 @@ snapshots:
   once@1.4.0:
     dependencies:
       wrappy: 1.0.2
+
+  otplib@13.2.1:
+    dependencies:
+      '@otplib/core': 13.2.1
+      '@otplib/hotp': 13.2.1
+      '@otplib/plugin-base32-scure': 13.2.1
+      '@otplib/plugin-crypto-noble': 13.2.1
+      '@otplib/totp': 13.2.1
+      '@otplib/uri': 13.2.1
 
   pac-proxy-agent@7.2.0:
     dependencies:
@@ -834,6 +925,10 @@ snapshots:
       b4a: 1.7.3
     transitivePeerDependencies:
       - react-native-b4a
+
+  totp-generator@2.0.1:
+    dependencies:
+      jssha: 3.3.1
 
   tslib@2.8.1: {}
 
