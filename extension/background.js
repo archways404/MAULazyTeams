@@ -9,7 +9,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 			// Example: fetch plan from your Fastify server
 			// const res = await fetch("http://127.0.0.1:3000/plan", { ... })
 
-			const res = await fetch("http://192.168.100.200:4007/shifts/me", {
+			const res = await fetch("http://localhost:4007/shifts/me", {
 				method: "POST",
 				headers: { "content-type": "application/json" },
 				body: JSON.stringify(email ? { email } : {}),
