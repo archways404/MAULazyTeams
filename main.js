@@ -38,7 +38,6 @@ async function main() {
 	const port = Number(process.env.PORT ?? 3000);
 	const host = process.env.HOST ?? "127.0.0.1";
 
-	// IMPORTANT: don't call this "ready" (Fastify has app.ready())
 	app.decorate("isReady", false);
 
 	// Block requests until ready (except health endpoints)
@@ -57,17 +56,20 @@ async function main() {
 	await app.register(registerCors);
 	await app.register(registerEndpoints);
 
-	try {
-		await getBearerToken({ log, debugOpts });
-		log.info("Bearer token primed.");
-		app.isReady = true;
-	} catch (e) {
-		log.error("Token prime failed at boot:", e?.message ?? e);
-		// server still starts; app.isReady remains false -> 503 for non-health
-	}
-
 	await app.listen({ port, host });
 	log.info(`Fastify listening on http://${host}:${port}`);
+
+	// Prime token AFTER listen (async)
+	(async () => {
+		try {
+			await getBearerToken({ log, debugOpts });
+			log.info("Bearer token primed.");
+			app.isReady = true;
+		} catch (e) {
+			log.error("Token prime failed at boot:", e?.message ?? e);
+			// keep isReady=false -> endpoints will return 503 (except /health)
+		}
+	})();
 
 	/*
 	const BearerToken = await fetchJWT(mau_id, pwd, mfa_secret, debugOpts);
