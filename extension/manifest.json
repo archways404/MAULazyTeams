@@ -1,9 +1,12 @@
 {
 	"manifest_version": 3,
-	"name": "Example Extension",
-	"version": "1.0",
-	"action": { "default_title": "Example", "default_popup": "popup/popup.html" },
-	"permissions": ["storage"],
+	 "name": "MAU Primula Helper",
+  "version": "0.1.0",
+	 "action": {
+    "default_title": "MAU Helper",
+    "default_popup": "popup/popup.html"
+  },
+	 "permissions": ["storage", "activeTab", "tabs"],
 	"host_permissions": ["https://mau.hr.evry.se/*", "http://192.168.100.200:4007/*"],
 	"content_scripts": [
 		{
