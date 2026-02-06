@@ -31,6 +31,8 @@ async function main() {
 		logger: false, // you already have your own logger
 	});
 
+	await app.register(registerCors);
+
 	// Attach shared objects so routes can use them
 	app.decorate("logx", log);
 	app.decorate("debugOpts", debugOpts);
@@ -54,7 +56,6 @@ async function main() {
 		}
 	});
 
-	await app.register(registerCors);
 	await app.register(registerEndpoints);
 
 	await app.listen({ port, host });
