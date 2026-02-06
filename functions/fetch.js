@@ -51,6 +51,36 @@ export async function graphRequestUserID(accessToken, log = noopLogger()) {
 	return resp.id;
 }
 
+export async function graphRequestExternalUserID(
+	accessToken,
+	MAU_EMAIL,
+	log = noopLogger(),
+) {
+	const url = `https://graph.microsoft.com/v1.0/users/${MAU_EMAIL}`;
+
+	log.verbose("Graph GET:", url);
+
+	const res = await fetch(url, {
+		headers: {
+			Authorization: `Bearer ${accessToken}`,
+			"Content-Type": "application/json",
+		},
+	});
+
+	const text = await readTextSafe(res);
+
+	if (!res.ok) {
+		log.error("Graph error (me):", res.status, truncate(text));
+		throw new Error(`Graph error ${res.status}: ${text}`);
+	}
+
+	const resp = JSON.parse(text);
+	log.info("Graph user id fetched.");
+	log.trace("Graph MAU_EMAIL - ID response:", resp.id);
+
+	return resp.id;
+}
+
 export async function graphRequestSchedule(accessToken, log = noopLogger()) {
 	const url =
 		"https://graph.microsoft.com/v1.0/teams/85cbf237-9110-4755-9bc4-d7e16fdbb68a/schedule/shifts";

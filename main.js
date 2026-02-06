@@ -1,6 +1,10 @@
 import { Temporal } from "@js-temporal/polyfill";
 import dotenv from "dotenv";
-import { graphRequestSchedule, graphRequestUserID } from "./functions/fetch.js";
+import {
+	graphRequestExternalUserID,
+	graphRequestSchedule,
+	graphRequestUserID,
+} from "./functions/fetch.js";
 import { parseDebugOptions } from "./functions/helpers.js";
 import { createLogger } from "./functions/log.js";
 // internal logic
@@ -157,6 +161,14 @@ async function main() {
 	log.verbose("userid:", UserID);
 
 	const data = await graphRequestSchedule(BearerToken, log);
+
+	const MAU_EMAIL = process.env.MAU_EMAIL;
+	const MAU_EMAIL_ID = await graphRequestExternalUserID(
+		BearerToken,
+		MAU_EMAIL,
+		log,
+	);
+	log.info("MAU_EMAIL_ID: ", MAU_EMAIL_ID);
 
 	const filteredData = filterPersonalShifts(data, UserID);
 	log.trace("filteredData:", filteredData);
