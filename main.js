@@ -43,6 +43,7 @@ async function main() {
 	// Block requests until ready (except health endpoints)
 	app.addHook("onRequest", async (req, reply) => {
 		if (req.url.startsWith("/health")) return;
+		if (req.method === "OPTIONS") return;
 
 		if (!app.isReady) {
 			return reply.code(503).send({
