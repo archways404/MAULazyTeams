@@ -1,37 +1,76 @@
-chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+const state = {
+	primulaReady: false,
+	phase: "idle", // idle | fetching | running | done | error
+	message: "",
+	plan: null,
+};
+
+function setState(patch) {
+	Object.assign(state, patch);
+	// if you later re-add ports/popup UI, you can broadcast here
+}
+
+async function fetchPlan(email) {
+	const res = await fetch("http://localhost:4007/shifts/me", {
+		method: "POST",
+		headers: { "content-type": "application/json" },
+		body: JSON.stringify(email ? { email } : {}),
+	});
+
+	const data = await res.json().catch(() => ({}));
+	if (!res.ok) throw new Error(data?.message || `API error ${res.status}`);
+
+	// TODO: map real response -> plan for your content runner
+	return {
+		runId: String(Date.now()),
+		// put whatever your runner expects here
+	};
+}
+
+chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 	(async () => {
-		if (message?.type !== "FETCH_PLAN") return;
-
-		const email = message.payload?.email || "";
-
 		try {
-			// --- Replace this with your real API call ---
-			// Example: fetch plan from your Fastify server
-			// const res = await fetch("http://127.0.0.1:3000/plan", { ... })
+			if (msg?.type === "PRIMULA_READY") {
+				setState({ primulaReady: true, message: "Primula ready." });
+				sendResponse?.({ ok: true });
+				return;
+			}
 
-			const res = await fetch("http://localhost:4007/shifts/me", {
-				method: "POST",
-				headers: { "content-type": "application/json" },
-				body: JSON.stringify(email ? { email } : {}),
-			});
+			if (msg?.type === "START_FROM_PAGE") {
+				const tabId = sender?.tab?.id;
+				if (!tabId) throw new Error("No tab id (are you calling from a page?)");
 
-			const data = await res.json();
-			if (!res.ok) throw new Error(data?.message || `API error ${res.status}`);
+				const email = msg.payload?.email || "";
 
-			// TODO: transform your API response into what content.js needs.
-			// For now: dummy plan (you will replace these arrays)
-			const plan = {
-				runId: String(Date.now()),
-				targetClicks: 3,
-				delayMs: 700,
-				fillDelayMs: 250,
-				compTypeValue: "0214",
-				dates: ["20260204", "20260208", "20260212"],
-				hours: ["3", "3", "3"],
-			};
+				setState({ phase: "fetching", message: "Fetching plan…" });
 
-			sendResponse({ ok: true, plan });
+				const plan = await fetchPlan(email);
+
+				setState({ plan, phase: "running", message: "Starting…" });
+
+				// Hand off to your content runner
+				await chrome.tabs.sendMessage(tabId, {
+					type: "MAU_START",
+					payload: plan,
+				});
+
+				setState({ phase: "running", message: "Started." });
+
+				sendResponse({ ok: true });
+				return;
+			}
+
+			// If you still want progress reporting later:
+			if (msg?.type === "RUN_PROGRESS") {
+				setState({
+					phase: msg.payload?.phase || state.phase,
+					message: msg.payload?.message || state.message,
+				});
+				sendResponse?.({ ok: true });
+				return;
+			}
 		} catch (e) {
+			setState({ phase: "error", message: e?.message || String(e) });
 			sendResponse({ ok: false, error: e?.message || String(e) });
 		}
 	})();

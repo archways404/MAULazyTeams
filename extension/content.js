@@ -1,3 +1,4 @@
+// content.js
 if (window.top !== window) {
 	// skip iframes
 } else {
@@ -6,7 +7,130 @@ if (window.top !== window) {
 	const KEY_PLAN = "__MAU_PLAN__";
 	const KEY_COUNT = "__MAU_NYRAD_COUNT__";
 	const KEY_DONE = "__MAU_FORM_DONE__";
+	const KEY_READY_SENT = "__MAU_READY_SENT__";
 
+	function readySent() {
+		return sessionStorage.getItem(KEY_READY_SENT) === "1";
+	}
+	function setReadySent() {
+		sessionStorage.setItem(KEY_READY_SENT, "1");
+	}
+
+	function hasNyRad() {
+		return !!document.querySelector(
+			'input[type="submit"][value="Ny rad"].button.wide',
+		);
+	}
+
+	// ---------- inject "USE MAUHELPER" next to first select ----------
+	function getAnchorSelect() {
+		return document.querySelector('select[title="Typ av ersättning"]');
+	}
+
+	function injectUseButton() {
+		if (document.getElementById("mauhelper-btn")) return;
+
+		const sel = getAnchorSelect();
+		if (!sel) return;
+
+		const btn = document.createElement("button");
+		btn.id = "mauhelper-btn";
+		btn.type = "button";
+		btn.textContent = "USE MAUHELPER";
+		btn.style.cssText = `
+      margin-left: 8px;
+      padding: 6px 10px;
+      cursor: pointer;
+      font-weight: 700;
+      border-radius: 8px;
+      border: 1px solid #444;
+      background: #111;
+      color: #fff;
+    `;
+
+		btn.addEventListener("click", showModal);
+
+		sel.insertAdjacentElement("afterend", btn);
+		console.log("[MAU Helper] Injected USE MAUHELPER button");
+	}
+
+	// ---------- modal UI ----------
+	function ensureModal() {
+		if (document.getElementById("mauhelper-modal")) return;
+
+		const wrap = document.createElement("div");
+		wrap.id = "mauhelper-modal";
+		wrap.style.cssText = `
+      position: fixed; top: 16px; right: 16px; z-index: 999999;
+      width: 340px; background: #111; color: #fff;
+      border: 1px solid #333; border-radius: 12px;
+      padding: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.45);
+      font-family: system-ui, sans-serif;
+      display: none;
+    `;
+
+		wrap.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-weight:800;">MAU Helper</div>
+        <button id="mh-close"
+          style="background:transparent;border:none;color:#fff;font-size:16px;cursor:pointer;">✕</button>
+      </div>
+
+      <div style="margin-top:10px;">
+        <input id="mh-email" placeholder="Email (optional)"
+          style="width:100%;padding:8px;border-radius:10px;border:1px solid #444;background:#0b0b0b;color:#fff;" />
+
+        <button id="mh-start"
+          style="margin-top:10px;width:100%;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:800;">
+          Fetch + Start
+        </button>
+
+        <div id="mh-status"
+          style="margin-top:10px;font-size:12px;opacity:.9;white-space:pre-wrap;"></div>
+      </div>
+    `;
+
+		document.body.appendChild(wrap);
+
+		wrap.querySelector("#mh-close").addEventListener("click", () => {
+			wrap.style.display = "none";
+		});
+
+		wrap.querySelector("#mh-start").addEventListener("click", async () => {
+			const status = wrap.querySelector("#mh-status");
+			const btn = wrap.querySelector("#mh-start");
+			const email = wrap.querySelector("#mh-email").value.trim();
+
+			btn.disabled = true;
+			status.textContent = "Fetching plan…";
+
+			chrome.runtime.sendMessage(
+				{ type: "START_FROM_PAGE", payload: { email } },
+				(resp) => {
+					const err = chrome.runtime.lastError;
+					if (err) {
+						status.textContent = `Error: ${err.message}`;
+						btn.disabled = false;
+						return;
+					}
+					if (!resp?.ok) {
+						status.textContent = `Error: ${resp?.error || "Unknown"}`;
+						btn.disabled = false;
+						return;
+					}
+					status.textContent = "Started ✅ (watch page / console)";
+					btn.disabled = false;
+				},
+			);
+		});
+	}
+
+	function showModal() {
+		ensureModal();
+		document.getElementById("mauhelper-modal").style.display = "block";
+	}
+
+	// ---------- runner plumbing (your existing stuff) ----------
 	function loadPlan() {
 		try {
 			const raw = sessionStorage.getItem(KEY_PLAN);
@@ -35,6 +159,12 @@ if (window.top !== window) {
 		sessionStorage.setItem(KEY_DONE, "1");
 	}
 
+	function notifyProgress(payload) {
+		chrome.runtime
+			.sendMessage({ type: "RUN_PROGRESS", payload })
+			.catch(() => {});
+	}
+
 	function findNyRadButton() {
 		return document.querySelector(
 			'input[type="submit"][value="Ny rad"].button.wide',
@@ -51,18 +181,17 @@ if (window.top !== window) {
 		return null;
 	}
 
+	// keep your find/set/fill fns as-is
 	function findDateInputs() {
 		return Array.from(
 			document.querySelectorAll('input[type="text"][title="Datum"].kalender'),
 		);
 	}
-
 	function findHoursInputs() {
 		return Array.from(
 			document.querySelectorAll('input[type="text"][title="Antal timmar"]'),
 		);
 	}
-
 	function findCompTypeSelects() {
 		return Array.from(
 			document.querySelectorAll('select[title="Typ av ersättning"]'),
@@ -94,8 +223,8 @@ if (window.top !== window) {
 			dateInputs.length,
 			hourInputs.length,
 			compSelects.length,
-			plan.dates.length,
-			plan.hours.length,
+			plan.dates?.length ?? 0,
+			plan.hours?.length ?? 0,
 		);
 
 		console.log("[MAU Helper] Filling rows:", n);
@@ -115,9 +244,17 @@ if (window.top !== window) {
 	async function runAutomationIfPlanned() {
 		if (!location.href.startsWith("https://mau.hr.evry.se/primula")) return;
 
+		// ping ready once
+		if (hasNyRad() && !readySent()) {
+			setReadySent();
+			chrome.runtime.sendMessage({ type: "PRIMULA_READY" }).catch(() => {});
+		}
+
 		const plan = loadPlan();
-		if (!plan) return; // nothing scheduled
-		if (isDone()) return; // already completed
+		if (!plan) return;
+		if (isDone()) return;
+
+		notifyProgress({ phase: "running", message: "Step 1/3…" });
 
 		const targetClicks = Number(plan.targetClicks ?? 0);
 		const delayMs = Number(plan.delayMs ?? 700);
@@ -127,51 +264,46 @@ if (window.top !== window) {
 			`[MAU Helper] runId=${plan.runId} progress ${count}/${targetClicks}`,
 		);
 
-		// Phase A: click “Ny rad” across reloads
+		notifyProgress({ phase: "running", message: "Step 2/3…" });
+
 		if (count < targetClicks) {
 			const btn = await waitForNyRad();
-			if (!btn) {
-				console.log("[MAU Helper] Ny rad button NOT found");
-				return;
-			}
+			if (!btn) return;
 
 			await sleep(delayMs);
-
-			// increment BEFORE click (page may reload instantly)
 			setCount(count + 1);
-
-			console.log(
-				`[MAU Helper] Clicking Ny rad (${count + 1}/${targetClicks})`,
-			);
 			btn.click();
 			return;
 		}
 
-		// Phase B: fill fields once
+		notifyProgress({ phase: "running", message: "Step 3/3…" });
 		await sleep(700);
 		await fillRows(plan);
 
 		setDone();
-		console.log("[MAU Helper] Completed ✅");
+		notifyProgress({ phase: "done", message: "Done ✅" });
 	}
 
-	// Listen for popup start
 	chrome.runtime.onMessage.addListener((msg) => {
 		if (msg?.type === "MAU_START") {
 			const plan = msg.payload;
 
-			// reset progress for a fresh run
 			sessionStorage.setItem(KEY_COUNT, "0");
 			sessionStorage.removeItem(KEY_DONE);
 
 			savePlan(plan);
-			console.log("[MAU Helper] Plan received:", plan);
-
-			// run immediately
 			runAutomationIfPlanned();
 		}
 	});
 
-	// Also continue automatically after reloads if a plan exists
+	// ---------- bootstrap ----------
+	injectUseButton();
 	runAutomationIfPlanned();
+
+	// keep working on dynamic pages
+	const obs = new MutationObserver(() => {
+		injectUseButton();
+		runAutomationIfPlanned(); // also re-run readiness checks after DOM changes
+	});
+	obs.observe(document.documentElement, { childList: true, subtree: true });
 }
