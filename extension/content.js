@@ -155,7 +155,7 @@ if (window.top !== window) {
 		const btn = document.createElement("button");
 		btn.id = "mauhelper-btn";
 		btn.type = "button";
-		btn.textContent = "USE MAUHELPER";
+		btn.textContent = "MAULazyTeams";
 		btn.style.cssText = `
       margin-left: 8px;
       padding: 6px 10px;
@@ -176,7 +176,7 @@ if (window.top !== window) {
 		});
 
 		sel.insertAdjacentElement("afterend", btn);
-		console.log("[MAU Helper] Injected USE MAUHELPER button");
+		console.log("[MAULazyTeams] Injected MAULazyTeams button");
 	}
 
 	function getStockholmYearMonthNow() {
@@ -372,7 +372,7 @@ if (window.top !== window) {
 							: `<div style="width:10px;height:10px;border-radius:999px;background:rgba(120,255,160,.85);box-shadow:0 0 18px rgba(120,255,160,.20);"></div>`
 					}
           <div>
-            <div style="font-weight:950;font-size:14px;line-height:1;">MAU Helper</div>
+            <div style="font-weight:950;font-size:14px;line-height:1;">MAULazyTeams</div>
             <div style="font-size:11px;opacity:.72;margin-top:4px;">
               ${locked ? "Running" : "Ready"}
             </div>
@@ -778,7 +778,7 @@ ${esc(logLines.length ? logLines.map((l) => `• ${l}`).join("\n") : "• Waitin
 					},
 				});
 				console.warn(
-					"[MAU Helper] Row mismatch after retries",
+					"[MAULazyTeams] Row mismatch after retries",
 					mismatches.at(-1),
 				);
 			}
