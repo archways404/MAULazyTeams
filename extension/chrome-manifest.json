@@ -1,0 +1,26 @@
+{
+	"manifest_version": 3,
+	"name": "MAULazyTeams",
+	"version": "0.0.1",
+	"action": {
+		"default_title": "MAULazyTeams",
+		"default_popup": "popup/popup.html"
+	},
+	"permissions": ["storage", "activeTab", "tabs"],
+	"host_permissions": [
+		"https://mau.hr.evry.se/*",
+		"http://localhost:4007/*",
+		"http://localhost/*"
+	],
+	"content_scripts": [
+		{
+			"matches": ["https://mau.hr.evry.se/primula*"],
+			"js": ["content.js"],
+			"run_at": "document_idle"
+		}
+	],
+	"background": {
+		"service_worker": "background.js",
+		"type": "module"
+	}
+}

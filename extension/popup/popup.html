@@ -1,23 +1,112 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8" />
-  <title>MAU Helper</title>
-  <style>
-    body { font-family: sans-serif; padding: 10px; width: 280px; }
-    input { width: 100%; box-sizing: border-box; padding: 6px; }
-    button { margin-top: 10px; width: 100%; padding: 8px; }
-    #status { margin-top: 10px; font-size: 12px; opacity: 0.85; white-space: pre-wrap; }
-  </style>
+<meta charset="utf-8" />
+<title>MAULazyTeams</title>
+
+<style>
+:root {
+  --bg: #0b0f14;
+  --card: #121821;
+  --border: rgba(255,255,255,.06);
+  --text: #e6edf3;
+  --muted: rgba(255,255,255,.55);
+  --accent: #5b8cff;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  width: 320px;
+  height: 200px;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  width: 100%;
+  padding: 18px;
+}
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 20px;
+  box-shadow: 0 15px 40px rgba(0,0,0,.45);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent);
+}
+
+.title {
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: .3px;
+}
+
+.description {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.footer {
+  margin-top: 18px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+  font-size: 11px;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+.version {
+  opacity: .6;
+}
+
+.author {
+  opacity: .8;
+}
+</style>
 </head>
+
 <body>
-  <h3>MAU Primula</h3>
+  <div class="container">
+    <div class="card">
+      <div class="header">
+        <div class="dot"></div>
+        <div class="title">MAULazyTeams</div>
+      </div>
 
-  <input id="emailInput" placeholder="Email (optional)" />
-  <button id="startBtn">Fetch + Start</button>
+      <div class="description">
+        Automates Primula shift entry using Teams shift data.
+      </div>
 
-  <div id="status"></div>
-
-  <script src="popup.js"></script>
+      <div class="footer">
+        <div class="version">v1.0</div>
+        <div class="author">archways404</div>
+      </div>
+    </div>
+  </div>
 </body>
 </html>

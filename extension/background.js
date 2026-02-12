@@ -51,24 +51,55 @@ function setState(patch) {
 }
 
 async function fetchPlan(email, year, month) {
-	const res = await fetch("http://localhost:4007/shifts/me", {
-		method: "POST",
-		headers: { "content-type": "application/json" },
-		body: JSON.stringify(email ? { email } : {}),
-	});
+	const ctrl = new AbortController();
+	const timeoutId = setTimeout(() => ctrl.abort(), 8000);
 
-	const data = await res.json().catch(() => ({}));
-	if (!res.ok) throw new Error(data?.message || `API error ${res.status}`);
+	let res;
+	try {
+		res = await fetch("http://localhost:4007/shifts/me", {
+			method: "POST",
+			headers: { "content-type": "application/json" },
+			body: JSON.stringify(email ? { email } : {}),
+			signal: ctrl.signal,
+		});
+	} catch (e) {
+		clearTimeout(timeoutId);
+		const msg =
+			e?.name === "AbortError"
+				? "Shifts server timed out (localhost:4007)."
+				: "Cannot reach shifts server (localhost:4007). Is it running?";
+		throw new Error(msg);
+	} finally {
+		clearTimeout(timeoutId);
+	}
+
+	// parse safely (some errors return HTML/text)
+	let data = {};
+	const ct = res.headers.get("content-type") || "";
+	if (ct.includes("application/json")) {
+		data = await res.json().catch(() => ({}));
+	} else {
+		const text = await res.text().catch(() => "");
+		data = { message: text?.slice(0, 200) };
+	}
+
+	if (!res.ok) {
+		const detail = data?.message ? `: ${data.message}` : "";
+		throw new Error(`API error ${res.status}${detail}`);
+	}
 
 	const normalized = normalizeShiftsPayload(data);
 	const merged = combineShiftsByDay(normalized, { mergeTitles: true });
 	const mergedFiltered = filterByMonth(merged, year, month);
 
 	const plan = makePrimulaPlanFromShifts(mergedFiltered);
-
-	// If you still want to keep raw for debugging:
 	plan.apiDataRaw = data;
 	plan.apiMergedFiltered = mergedFiltered;
+
+	// optional: make “no shifts” a first-class error
+	if (!plan.dates.length) {
+		throw new Error("No shifts found for that month.");
+	}
 
 	return plan;
 }
