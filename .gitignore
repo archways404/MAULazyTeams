@@ -52,3 +52,5 @@ Mkfile.old
 dkms.conf
 /node_modules
 .env
+/extension/dist
+/extension/node_modules

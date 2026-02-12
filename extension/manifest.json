@@ -19,5 +19,5 @@
 			"run_at": "document_idle"
 		}
 	],
-	"background": { "scripts": ["background.js"] }
+	"background": { "scripts": ["background.js"], "type": "module" }
 }

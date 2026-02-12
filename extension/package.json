@@ -1,0 +1,13 @@
+{
+	"type": "module",
+	"scripts": {
+		"build": "vite build && node scripts/copy-manifest.mjs",
+		"dev": "vite build --watch && node scripts/copy-manifest.mjs"
+	},
+	"devDependencies": {
+		"vite": "^7.3.1"
+	},
+	"dependencies": {
+		"@js-temporal/polyfill": "^0.5.1"
+	}
+}
