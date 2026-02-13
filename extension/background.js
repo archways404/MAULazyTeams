@@ -56,7 +56,7 @@ async function fetchPlan(email, year, month) {
 
 	let res;
 	try {
-		res = await fetch("http://localhost:4007/shifts/me", {
+		res = await fetch("https://mlt.k14net.org/shifts/me", {
 			method: "POST",
 			headers: { "content-type": "application/json" },
 			body: JSON.stringify(email ? { email } : {}),
