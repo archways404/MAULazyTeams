@@ -136,13 +136,34 @@ export function parseDebugOptions(input, env = process.env) {
 export function resolvePuppeteerLaunchOptions(opts) {
 	const debugOn = opts.mode !== DEBUG_MODES.OFF;
 
+	// keep your behavior:
+	// - debug on => headed by default
+	// - debug off => headless by default
 	const headless =
-		typeof opts.headless === "boolean" ? opts.headless : debugOn ? false : true; // auto
+		typeof opts.headless === "boolean" ? opts.headless : debugOn ? false : true;
+
+	const inDocker =
+		process.env.IN_DOCKER === "true" ||
+		process.env.DOCKER === "true" ||
+		!!process.env.COOLIFY_CONTAINER_NAME ||
+		!!process.env.KUBERNETES_SERVICE_HOST ||
+		process.env.CI === "true";
+
+	const dockerArgs = [
+		"--no-sandbox",
+		"--disable-setuid-sandbox",
+		"--disable-dev-shm-usage",
+		"--disable-gpu",
+	];
 
 	return {
 		headless,
 		defaultViewport: null,
 		slowMo: debugOn ? (opts.slowMo ?? 0) : undefined,
 		devtools: debugOn ? Boolean(opts.devtools) : false,
+
+		// 👇 critical for containers
+		args: inDocker ? dockerArgs : undefined,
+		executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
 	};
 }

@@ -1,0 +1,18 @@
+services:
+    maulazyteams:
+        build: .
+        restart: unless-stopped
+        environment:
+            PORT: "4007"
+            HOST: "0.0.0.0"
+
+            MAU_ID: "${MAU_ID}"
+            MAU_PWD: "${MAU_PWD}"
+            MFA_SECRET: "${MFA_SECRET}"
+            MAU_EMAIL: "${MAU_EMAIL}"
+
+            IN_DOCKER: "true"
+            PUPPETEER_SKIP_DOWNLOAD: "true"
+            PUPPETEER_EXECUTABLE_PATH: "/usr/bin/chromium"
+        ports:
+            - "4007:4007"

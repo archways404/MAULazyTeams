@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log
+pnpm-debug.log
+.git
+.gitignore
+
+# ignore the browser extension folder entirely
+extension
+
+# misc
+*.md
+backup.js
+.env
