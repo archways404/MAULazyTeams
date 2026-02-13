@@ -1,10 +1,17 @@
-# MAULazyTeams
+<p align="center">
+  <img src="https://raw.githubusercontent.com/archways404/MAULazyTeams/master/extension/icons/icon256.png" width="180" />
+</p>
+
+<h1 align="center">MAULazyTeams</h1>
 
 **MAULazyTeams** is a lightweight browser extension that simplifies
 shift management in MAU Primula.
 
 It automates repetitive steps, fetches your shifts, and makes your
 workflow faster --- so you don't have to.
+
+## Demo
+[Demo]()
 
 ## Features
 
