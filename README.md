@@ -11,7 +11,8 @@ It automates repetitive steps, fetches your shifts, and makes your
 workflow faster --- so you don't have to.
 
 ## Demo
-[Demo]()
+
+https://github.com/user-attachments/assets/d4aa6b6b-2000-4e40-ab38-1c8bda8013aa
 
 ## Features
 
