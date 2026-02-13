@@ -2,7 +2,7 @@ FROM node:20-bookworm-slim
 
 WORKDIR /app
 
-# Install Chromium + deps for Puppeteer
+# Chromium + deps for Puppeteer
 RUN apt-get update && apt-get install -y --no-install-recommends \
     chromium \
     ca-certificates \
@@ -28,11 +28,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 
-# Install deps (use npm ci since your root package.json is npm-style)
-COPY package*.json ./
-RUN npm ci --omit=dev
+# Enable pnpm via corepack
+RUN corepack enable
 
-# Copy backend source (extension folder excluded by .dockerignore)
+# Install dependencies using pnpm lockfile
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile --prod
+
+# Copy backend source (extension excluded by .dockerignore)
 COPY . .
 
 ENV PORT=4007
