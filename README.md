@@ -10,6 +10,14 @@ shift management in MAU Primula.
 It automates repetitive steps, fetches your shifts, and makes your
 workflow faster --- so you don't have to.
 
+## Install
+
+<p align="center">
+  <a href='https://addons.mozilla.org/en-US/firefox/addon/maulazyteams/' target="_blank"><img alt='Firefoxbrowser' src='https://img.shields.io/badge/Firefox_- install add--on-100000?style=flat&logo=Firefoxbrowser&logoColor=E66000&labelColor=black&color=E66000'/></a>
+  &nbsp;&nbsp;
+ <a href='https://chromewebstore.google.com/detail/jegnjhidcklfdlbiolepgbnndfjpeeda?utm_source=item-share-cb' target="_blank"><img alt='googlechrome' src='https://img.shields.io/badge/Chrome_- install extension-100000?style=flat&logo=googlechrome&logoColor=4285F4&labelColor=black&color=4285F4'/></a>
+</p>
+
 ## Demo
 
 https://github.com/user-attachments/assets/d4aa6b6b-2000-4e40-ab38-1c8bda8013aa
