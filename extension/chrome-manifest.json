@@ -16,7 +16,7 @@
 			"32": "icons/icon32.png"
  		}
 	},
-	"permissions": ["storage", "activeTab", "tabs"],
+	"permissions": [],
 	"host_permissions": [
 		"https://mau.hr.evry.se/*",
 		"http://localhost:4007/*",
