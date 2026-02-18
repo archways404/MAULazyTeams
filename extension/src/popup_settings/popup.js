@@ -1,4 +1,4 @@
-import { DEFAULT_SETTINGS } from "../functions/settings.js";
+import { DEFAULT_SETTINGS } from "../shared/settings.js";
 
 const apiKeyInput = document.getElementById("apiKey");
 const remoteToggle = document.getElementById("remoteToggle");
