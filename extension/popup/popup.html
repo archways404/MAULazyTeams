@@ -1,189 +1,319 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8" />
-<title>MAULazyTeams</title>
+  <meta charset="utf-8" />
+  <title>MAULazyTeams</title>
 
-<style>
-:root {
-  --bg: #0b0f14;
-  --card: #121821;
-  --border: rgba(255,255,255,.06);
-  --text: #e6edf3;
-  --muted: rgba(255,255,255,.55);
-  --accent: #5b8cff;
-}
+  <style>
+    :root{
+      --bg:#0b0f14;
+      --card:#121821;
+      --border:rgba(255,255,255,.08);
+      --text:#e6edf3;
+      --muted:rgba(255,255,255,.62);
+      --muted2:rgba(255,255,255,.40);
+      --accent:#5b8cff;
 
-* { box-sizing: border-box; }
+      --ok: rgba(120,255,160,.85);
+      --okBorder: rgba(120,255,160,.35);
 
-body {
-  margin: 0;
-  width: 320px;
-  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
-  background: var(--bg);
-  color: var(--text);
-}
+      --off: rgba(255,255,255,.10);
+      --offBorder: rgba(255,255,255,.12);
 
-.container { padding: 18px; }
+      --danger: rgba(255,110,110,.85);
+      --dangerBorder: rgba(255,110,110,.35);
+    }
 
-.card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 18px;
-  box-shadow: 0 15px 40px rgba(0,0,0,.45);
-}
+    *{ box-sizing:border-box; }
 
-.header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 12px;
-}
+    body{
+      margin:0;
+      width:340px;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      background:var(--bg);
+      color:var(--text);
+    }
 
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 12px var(--accent);
-}
+    .container{ padding:16px; }
 
-.title {
-  font-size: 15px;
-  font-weight: 700;
-}
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:16px;
+      padding:16px;
+      box-shadow:0 15px 40px rgba(0,0,0,.45);
+    }
 
-.description {
-  font-size: 12px;
-  color: var(--muted);
-  margin-bottom: 14px;
-}
+    .header{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:10px;
+    }
 
-/* INPUT */
-.input {
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: #0f141c;
-  color: var(--text);
-  font-size: 12px;
-  margin-bottom: 12px;
-}
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      min-width:0;
+    }
 
-/* TOGGLE SWITCH */
-.toggle-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 12px;
-  margin-bottom: 14px;
-}
+    .dot{
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      background:var(--accent);
+      box-shadow:0 0 12px var(--accent);
+      flex:0 0 auto;
+    }
 
-.switch {
-  position: relative;
-  width: 38px;
-  height: 20px;
-}
+    .title{
+      font-size:15px;
+      font-weight:800;
+      line-height:1.1;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
 
-.switch input { display: none; }
+    .sub{
+      margin-top:3px;
+      font-size:11px;
+      color:var(--muted2);
+    }
 
-.slider {
-  position: absolute;
-  inset: 0;
-  background: #2a3442;
-  border-radius: 20px;
-  cursor: pointer;
-  transition: .2s;
-}
+    .badge{
+      font-size:11px;
+      font-weight:800;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      white-space:nowrap;
+    }
+    .badge.remote{ border-color: var(--okBorder); background: rgba(120,255,160,.10); }
+    .badge.local{ border-color: rgba(255,255,255,.16); background: rgba(255,255,255,.06); }
 
-.slider:before {
-  content: "";
-  position: absolute;
-  height: 16px;
-  width: 16px;
-  left: 2px;
-  top: 2px;
-  background: white;
-  border-radius: 50%;
-  transition: .2s;
-}
+    .sectionTitle{
+      margin-top:10px;
+      margin-bottom:10px;
+      font-size:12px;
+      font-weight:900;
+      color:rgba(255,255,255,.82);
+      letter-spacing:.2px;
+    }
 
-input:checked + .slider {
-  background: var(--accent);
-}
+    .desc{
+      font-size:12px;
+      color:var(--muted);
+      margin-bottom:12px;
+      line-height:1.35;
+    }
 
-input:checked + .slider:before {
-  transform: translateX(18px);
-}
+    .field{
+      margin-bottom:12px;
+    }
 
-/* BUTTON */
-button {
-  width: 100%;
-  padding: 8px;
-  border-radius: 10px;
-  border: none;
-  background: var(--accent);
-  color: white;
-  font-weight: 600;
-  cursor: pointer;
-}
+    .labelRow{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:6px;
+    }
 
-button:hover { opacity: .9; }
+    .label{
+      font-size:11px;
+      font-weight:800;
+      color:rgba(255,255,255,.78);
+    }
 
-.status {
-  margin-top: 8px;
-  font-size: 11px;
-  color: var(--muted);
-  text-align: center;
-}
+    .hint{
+      font-size:10px;
+      color:var(--muted2);
+      white-space:nowrap;
+    }
 
-.footer {
-  margin-top: 12px;
-  font-size: 10px;
-  color: var(--muted);
-  display: flex;
-  justify-content: space-between;
-}
-</style>
+    .input{
+      width:100%;
+      padding:9px 10px;
+      border-radius:10px;
+      border:1px solid var(--offBorder);
+      background:rgba(255,255,255,.04);
+      color:var(--text);
+      font-size:12px;
+      outline:none;
+      transition: .15s ease;
+    }
+    .input::placeholder{ color: rgba(255,255,255,.35); }
+
+    .input.active{
+      border-color: var(--okBorder);
+      background: rgba(120,255,160,.06);
+    }
+    .input.inactive{
+      opacity:.55;
+      filter:saturate(.7);
+    }
+    .input.invalid{
+      border-color: var(--dangerBorder);
+      background: rgba(255,110,110,.06);
+    }
+
+    .toggleRow{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
+      padding:10px 10px;
+      border-radius:12px;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.04);
+      margin-bottom:12px;
+    }
+
+    .toggleText{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
+    }
+    .toggleText b{ font-size:12px; }
+    .toggleText span{ font-size:10px; color:var(--muted2); }
+
+    .switch{
+      position:relative;
+      width:42px;
+      height:22px;
+      flex:0 0 auto;
+    }
+    .switch input{ display:none; }
+    .slider{
+      position:absolute;
+      inset:0;
+      background:#2a3442;
+      border-radius:999px;
+      cursor:pointer;
+      transition:.2s;
+    }
+    .slider:before{
+      content:"";
+      position:absolute;
+      height:18px;width:18px;
+      left:2px;top:2px;
+      background:white;
+      border-radius:50%;
+      transition:.2s;
+    }
+    input:checked + .slider{ background: var(--accent); }
+    input:checked + .slider:before{ transform: translateX(20px); }
+
+    button{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid rgba(90,120,255,.38);
+      background:rgba(90,120,255,.20);
+      color:#fff;
+      font-weight:950;
+      cursor:pointer;
+      transition:.15s ease;
+      letter-spacing:.2px;
+      font-size:13px;
+    }
+    button:hover{ transform: translateY(-1px); }
+    button:active{ transform: translateY(0px); opacity:.92; }
+
+    .status{
+      margin-top:10px;
+      font-size:11px;
+      color:var(--muted);
+      text-align:center;
+      min-height:16px;
+      white-space:pre-wrap;
+    }
+
+    .footer{
+      margin-top:12px;
+      font-size:10px;
+      color:var(--muted2);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+    }
+
+    .author {
+      font-weight: 800;
+      color: var(--accent);
+    }
+
+  </style>
 </head>
 
 <body>
   <div class="container">
     <div class="card">
       <div class="header">
-        <div class="dot"></div>
-        <div class="title">MAULazyTeams</div>
+        <div class="brand">
+          <div class="dot"></div>
+          <div>
+            <div class="title">MAULazyTeams</div>
+            <div class="sub">Primula shift entry automation</div>
+          </div>
+        </div>
+
+        <div id="modeBadge" class="badge">…</div>
       </div>
 
-      <div class="description">
-        Automates Primula shift entry.
+      <div class="sectionTitle">Settings</div>
+
+      <div class="field">
+        <div class="labelRow">
+          <div class="label">API Key</div>
+          <div class="hint" style="color: rgba(255,110,110,.85); font-weight: 800;">required</div>
+        </div>
+        <input id="apiKey" class="input" placeholder="Enter API key" />
       </div>
 
-      <input id="apiKey" class="input" placeholder="Product / Admin Key" />
-
-      <input id="remoteUrl" class="input" placeholder="Remote Base URL (https://...)" />
-      <input id="localUrl" class="input" placeholder="Local Base URL (http://localhost:4007)" />
-
-      <div class="toggle-row">
-        <span>Use Remote API</span>
-        <label class="switch">
+      <div class="toggleRow">
+        <div class="toggleText">
+          <b>Use Remote API</b>
+          <span>Toggle which base URL is used</span>
+        </div>
+        <label class="switch" title="Use remote API">
           <input type="checkbox" id="remoteToggle">
           <span class="slider"></span>
         </label>
       </div>
 
-      <button id="saveBtn">Save Settings</button>
+      <div class="field">
+        <div class="labelRow">
+          <div class="label">Remote Base URL</div>
+          <div class="hint">https://…</div>
+        </div>
+        <input id="remoteUrl" class="input" placeholder="https://mlt.k14net.org" />
+      </div>
+
+      <div class="field">
+        <div class="labelRow">
+          <div class="label">Local Base URL</div>
+          <div class="hint">http://…</div>
+        </div>
+        <input id="localUrl" class="input" placeholder="http://localhost:4007" />
+      </div>
+
+      <button id="saveBtn">Save</button>
       <div id="status" class="status"></div>
 
       <div class="footer">
-        <div>v1.0</div>
-        <div>archways404</div>
+        <div id="versionLine">v…</div>
+        <div>made by <span class="author">archways404</span></div>
       </div>
     </div>
   </div>
 
-<script type="module" src="popup.js"></script>
+  <script type="module" src="./popup.js"></script>
 </body>
 </html>

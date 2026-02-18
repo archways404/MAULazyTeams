@@ -12,5 +12,5 @@ export async function getSettings() {
 
 export function getBaseUrl(settings) {
   const base = settings.useRemote ? settings.remoteBaseUrl : settings.localBaseUrl;
-  return String(base || "").replace(/\/+$/, ""); // trim trailing slashes
+  return String(base || "").replace(/\/+$/, "");
 }

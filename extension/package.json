@@ -1,11 +1,14 @@
 {
 	"type": "module",
 	"scripts": {
-		"build": "vite build && node scripts/copy-manifest.mjs",
-		"build_chrome": "vite build && node scripts/copy-manifest-chrome.mjs",
+		"build:ffx": "vite build && vite build -c vite.content.config.js && node scripts/copy-manifest.mjs",
+		"build:chrome": "vite build && vite build -c vite.content.config.js && node scripts/copy-manifest-chrome.mjs",
+		"release:ffx": "node scripts/build-release-ffx.js",
+    	"release:chrome": "node scripts/build-release-chrome.js",
 		"dev": "vite build --watch && node scripts/copy-manifest.mjs"
 	},
 	"devDependencies": {
+		"archiver": "^7.0.1",
 		"vite": "^7.3.1"
 	},
 	"dependencies": {
