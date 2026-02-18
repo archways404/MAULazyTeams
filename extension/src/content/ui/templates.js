@@ -1,29 +1,61 @@
 import { esc, spinnerCss } from "./styles.js";
 
-export function renderHeader({ locked }) {
+export function renderHeader({ locked, apiKeySet }) {
+  const running = !!locked;
+  const needsKey = !apiKeySet;
+
+  const dot = running
+    ? `<div style="${spinnerCss(14)}"></div>`
+    : needsKey
+      ? `<div style="width:10px;height:10px;border-radius:999px;background:rgba(255,204,0,.95);box-shadow:0 0 18px rgba(255,204,0,.25);"></div>`
+      : `<div style="width:10px;height:10px;border-radius:999px;background:rgba(120,255,160,.85);box-shadow:0 0 18px rgba(120,255,160,.20);"></div>`;
+
+  const statusText = running
+    ? "Running"
+    : needsKey
+      ? "API key required"
+      : ""; // <-- no “Ready”
+
+  const banner = (!running && needsKey)
+    ? `
+      <div style="
+        margin-top:10px;
+        padding:10px 12px;
+        border-radius:12px;
+        background: rgba(255,204,0,.08);
+        border: 1px solid rgba(255,204,0,.25);
+        font-size:12px;
+        line-height:1.4;
+      ">
+        ⚠️ API key is missing.<br>
+        Open the extension popup and set <b>API Key</b> to enable Run.
+      </div>
+    `
+    : "";
+
   return `
     <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
       <div style="display:flex;align-items:center;gap:10px;">
-        ${
-          locked
-            ? `<div style="${spinnerCss(14)}"></div>`
-            : `<div style="width:10px;height:10px;border-radius:999px;background:rgba(120,255,160,.85);box-shadow:0 0 18px rgba(120,255,160,.20);"></div>`
-        }
+        ${dot}
         <div>
           <div style="font-weight:950;font-size:14px;line-height:1;">MAULazyTeams</div>
-          <div style="font-size:11px;opacity:.72;margin-top:4px;">
-            ${locked ? "Running" : "Ready"}
-          </div>
+          ${
+            statusText
+              ? `<div style="font-size:11px;opacity:.72;margin-top:4px;">${statusText}</div>`
+              : ""
+          }
         </div>
       </div>
 
       <button id="mh-close" title="Close"
-        style="background:transparent;border:none;color:#fff;font-size:18px;cursor:${locked ? "not-allowed" : "pointer"};opacity:${locked ? ".28" : ".85"};padding:4px 8px;">
+        style="background:transparent;border:none;color:#fff;font-size:18px;cursor:${running ? "not-allowed" : "pointer"};opacity:${running ? ".28" : ".85"};padding:4px 8px;">
         ✕
       </button>
     </div>
+    ${banner}
   `;
 }
+
 
 export function renderFormView({ now, lastStatus }) {
   const cssInput = `
@@ -77,7 +109,7 @@ export function renderFormView({ now, lastStatus }) {
           </div>
         </div>
 
-        <button id="mh-start" style="${cssBtnPrimary}">Fetch + Start</button>
+        <button id="mh-start" style="${cssBtnPrimary}">RUN</button>
 
         <div id="mh-status" style="font-size:12px;opacity:.85;white-space:pre-wrap;min-height:18px;">
           ${esc(lastStatus || "")}

@@ -2,6 +2,7 @@ import { resolve } from "path";
 import { defineConfig } from "vite";
 
 export default defineConfig({
+  base: "./",
   build: {
     outDir: "dist",
     emptyOutDir: true,
@@ -9,7 +10,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         background: resolve(__dirname, "./background.js"),
-        popup: resolve(__dirname, "./src/popup_settings/popup.html"),
+        popup: resolve(__dirname, "./popup/popup.html"),
       },
       output: {
         entryFileNames: "[name].js",

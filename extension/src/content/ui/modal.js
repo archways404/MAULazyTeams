@@ -1,6 +1,7 @@
 import { MAU_DOMAIN } from "../../shared/constants.js";
 import { getStockholmYearMonthNow, normalizeUserToEmail } from "../../shared/time.js";
 import { ensureStyles } from "./styles.js";
+import { getSettings } from "../../shared/settings.js";
 import {
   renderHeader,
   renderFormView,
@@ -14,6 +15,13 @@ import { startFromPage, checkHealth, notifyProgress } from "../messaging.js";
 import { appendLog, getLogLines, ssGet, ssSet, SKEY, LKEY } from "../storage.js";
 
 let now = getStockholmYearMonthNow();
+
+async function getHeaderFlags() {
+  const s = await getSettings();
+  return {
+    apiKeySet: !!String(s.apiKey || "").trim(),
+  };
+}
 
 function ensureOverlay() {
   if (document.getElementById("mauhelper-overlay")) return;
@@ -44,6 +52,7 @@ function openOverlay() {
   const ov = document.getElementById("mauhelper-overlay");
   if (ov) ov.style.display = "block";
 }
+
 function closeOverlay() {
   const ov = document.getElementById("mauhelper-overlay");
   if (ov) ov.style.display = "none";
@@ -74,7 +83,7 @@ function ensureModal() {
     display: none;
   `;
   document.body.appendChild(wrap);
-  renderModal();
+  renderModal().catch(() => {});
 }
 
 function openModal() {
@@ -103,7 +112,8 @@ function getUiMode() {
 }
 function setUiMode(mode) {
   ssSet(SKEY.UI_MODE, mode);
-  renderModal();
+  renderModal().catch(() => {});
+
 
   if (mode === "form") startHealthPolling(uiApi);
   else stopHealthPolling();
@@ -121,7 +131,7 @@ function isLogOpen() {
 }
 function setLogOpen(v) {
   ssSet(SKEY.LOG_OPEN, v ? "1" : "0");
-  renderModal();
+  renderModal().catch(() => {});
 }
 
 function primeEmailField() {
@@ -182,7 +192,7 @@ function scheduleAutoCloseAfterSuccess() {
   }, 4000);
 }
 
-function renderModal() {
+async function renderModal() {
   const m = document.getElementById("mauhelper-modal");
   if (!m) return;
 
@@ -194,7 +204,8 @@ function renderModal() {
   const logLines = getLogLines();
   const logOpen = isLogOpen();
 
-  const header = renderHeader({ locked });
+  const { apiKeySet } = await getHeaderFlags();
+  const header = renderHeader({ locked, apiKeySet });
 
   let body = "";
   if (mode === "status") body = renderStatusView({ lastStatus, logOpen, logLines });
@@ -223,6 +234,10 @@ function renderModal() {
     const startBtn = m.querySelector("#mh-start");
 
     primeEmailField();
+
+    if (!apiKeySet) {
+      setStartEnabled(false, "API key required. Set it in the extension popup.");
+    }
 
     userInput?.addEventListener("blur", () => {
       const fixed = normalizeUserToEmail(userInput.value, MAU_DOMAIN);
@@ -305,22 +320,34 @@ export function ensureModalSystem() {
   hookSettingsChanged(uiApi);
 }
 
-export function setupInjectButton(getAnchorSelect) {
-  // optional override: pass a selector function; otherwise default
-  const getSel =
-    getAnchorSelect ||
-    (() => document.querySelector('select[title="Typ av ersättning"]'));
-
+export function setupInjectButton() {
   if (document.getElementById("mauhelper-btn")) return;
-  const sel = getSel();
-  if (!sel) return;
+
+  const visaBtn = document.querySelector(
+    'input[type="submit"][value="Visa timlön"], input[type="submit"][title="Visa timlön"]'
+  );
+  if (!visaBtn) return;
+
+  // inner td that holds the "Visa timlön" input
+  const innerTd = visaBtn.closest("td");
+  if (!innerTd) return;
+
+  // outer td (colspan=4) that contains the whole small table
+  const outerTd = innerTd.closest('td[colspan="4"]');
+  if (!outerTd) return;
+
+  // make outerTd the positioning context
+  outerTd.style.position = "relative";
 
   const btn = document.createElement("button");
   btn.id = "mauhelper-btn";
   btn.type = "button";
   btn.textContent = "MAULazyTeams";
   btn.style.cssText = `
-    margin-left: 8px;
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
     padding: 6px 10px;
     cursor: pointer;
     font-weight: 800;
@@ -328,15 +355,21 @@ export function setupInjectButton(getAnchorSelect) {
     border: 1px solid rgba(255,255,255,.18);
     background: rgba(12,12,12,.95);
     color: #fff;
+    box-shadow: 0 4px 12px rgba(0,0,0,.35);
+    z-index: 5;
   `;
 
   btn.addEventListener("click", () => {
-    ensureModal();
-    setUiMode(isLocked() ? "status" : "form");
-    openModal();
+    uiApi.ensureModal();
+    uiApi.setUiMode("form");
+    uiApi.openModal();
     primeEmailField();
   });
 
-  sel.insertAdjacentElement("afterend", btn);
-  console.log("[MAULazyTeams] Injected MAULazyTeams button");
+  outerTd.appendChild(btn);
+  console.log("[MAULazyTeams] Injected button (outer colspan td, right)");
 }
+
+
+
+
