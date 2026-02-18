@@ -4,6 +4,8 @@ import {
 	normalizeShiftsPayload,
 } from "./functions/parser.js";
 
+import { getSettings, getBaseUrl } from "./functions/settings.js"
+
 const state = {
 	primulaReady: false,
 	phase: "idle", // idle | fetching | running | done | error
@@ -50,24 +52,62 @@ function setState(patch) {
 	// if you later re-add ports/popup UI, you can broadcast here
 }
 
+async function healthCheck() {
+  const settings = await getSettings();
+  const baseUrl = String(getBaseUrl(settings) || "").replace(/\/+$/, "");
+  if (!baseUrl) return { ok: false, baseUrl: "", message: "No baseUrl configured" };
+
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), 2500);
+
+  try {
+    const res = await fetch(`${baseUrl}/health`, {
+      method: "GET",
+      signal: ctrl.signal,
+      cache: "no-store",
+    });
+
+    const ct = res.headers.get("content-type") || "";
+    const data = ct.includes("application/json") ? await res.json().catch(() => null) : null;
+
+    if (!res.ok) return { ok: false, baseUrl, message: `HTTP ${res.status}` };
+    if (!data?.ok) return { ok: false, baseUrl, message: data?.message || "Service not ready" };
+
+    // Optional: pass through token info for UI
+    return { ok: true, baseUrl, message: "Service ready", data };
+  } catch (e) {
+    const m = e?.name === "AbortError" ? "Health check timeout" : "Health check failed";
+    return { ok: false, baseUrl, message: m };
+  } finally {
+    clearTimeout(t);
+  }
+}
+
 async function fetchPlan(email, year, month) {
+	const settings = await getSettings();
+	const baseUrl = getBaseUrl(settings);
+
 	const ctrl = new AbortController();
 	const timeoutId = setTimeout(() => ctrl.abort(), 8000);
 
 	let res;
 	try {
-		res = await fetch("https://mlt.k14net.org/shifts/me", {
-			method: "POST",
-			headers: { "content-type": "application/json" },
-			body: JSON.stringify(email ? { email } : {}),
-			signal: ctrl.signal,
+		const payload = {
+		...(email ? { email } : {}),
+		...(settings.apiKey ? { apiKey: settings.apiKey } : {}),
+		};
+
+		res = await fetch(`${baseUrl}/shifts/me`, {
+		method: "POST",
+		headers: { "content-type": "application/json" },
+		body: JSON.stringify(payload),
+		signal: ctrl.signal,
 		});
 	} catch (e) {
-		clearTimeout(timeoutId);
 		const msg =
-			e?.name === "AbortError"
-				? "Shifts server timed out (localhost:4007)."
-				: "Cannot reach shifts server (localhost:4007). Is it running?";
+		e?.name === "AbortError"
+			? `Shifts server timed out (${baseUrl}).`
+			: `Cannot reach shifts server (${baseUrl}). Is it running?`;
 		throw new Error(msg);
 	} finally {
 		clearTimeout(timeoutId);
@@ -107,10 +147,19 @@ async function fetchPlan(email, year, month) {
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 	(async () => {
 		try {
+
+			if (msg?.type === "HEALTH_CHECK") {
+				const result = await healthCheck();
+				sendResponse(result);
+				return;
+			}
+			
 			if (msg?.type === "PRIMULA_READY") {
 				sendResponse?.({ ok: true });
 				return;
 			}
+
+
 
 			if (msg?.type === "START_FROM_PAGE") {
 				const tabId = sender?.tab?.id;

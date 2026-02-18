@@ -13,18 +13,26 @@ export default async function shiftsPost(app) {
 				body: {
 					type: "object",
 					additionalProperties: false,
+					required: ["apiKey"],
 					properties: {
-						email: { type: "string" }, // optional
-					},
-				},
-			},
+					email: { type: "string" },
+					apiKey: { type: "string", minLength: 1 }
+					}
+				}
+			}
 		},
 		async (req, reply) => {
 			const log = app.logx;
 			const debugOpts = app.debugOpts;
 
-			const token = await getBearerToken({ log, debugOpts });
+			const apiKey = (req.body?.apiKey ?? "").trim();
 
+			if (process.env.API_KEY && apiKey !== process.env.API_KEY) {
+				log.info("Invalid API key attempt");
+				return reply.status(401).send({ ok: false, message: "Invalid API key" });
+			}
+
+			const token = await getBearerToken({ log, debugOpts });
 			const data = await graphRequestSchedule(token, log);
 
 			// If no email provided -> return unfiltered (but you can still prune deletions if you want)

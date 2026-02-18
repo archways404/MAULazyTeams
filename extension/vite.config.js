@@ -5,12 +5,12 @@ export default defineConfig({
 	build: {
 		outDir: "dist",
 		emptyOutDir: true,
-		sourcemap: true, // helps debugging extensions a LOT
+		sourcemap: true,
 		rollupOptions: {
 			input: {
 				background: resolve(__dirname, "./background.js"),
 				content: resolve(__dirname, "./content.js"),
-				popup: resolve(__dirname, "popup/popup.html"), // ✅ this bundles popup.js too
+				popup: resolve(__dirname, "popup/popup.html"),
 			},
 			output: {
 				// MV3 likes stable filenames for entries

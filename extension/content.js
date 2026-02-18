@@ -26,6 +26,70 @@ if (window.top !== window) {
 	const KEY_LAST_USER = "mauhelper:lastUser"; // localStorage
 	const MAU_DOMAIN = "@mau.se";
 
+	let healthIntervalId = null;
+
+	chrome.storage.onChanged.addListener((changes, area) => {
+		if (area !== "local") return;
+		if (getUiMode() !== "form") return;
+
+		// settings changed → re-check immediately
+		updateHealthUiOnce().catch(() => {});
+	});
+
+
+	async function checkHealth() {
+  		return await chrome.runtime.sendMessage({ type: "HEALTH_CHECK" });
+	}
+
+	function setStartEnabled(enabled, hint = "") {
+		const m = document.getElementById("mauhelper-modal");
+		if (!m) return;
+
+		const btn = m.querySelector("#mh-start");
+		if (!btn) return;
+
+		btn.disabled = !enabled;
+		btn.style.opacity = enabled ? "1" : "0.45";
+		btn.style.cursor = enabled ? "pointer" : "not-allowed";
+
+		if (hint) {
+			setLastStatus(hint);
+			updateStatusUI();
+		}
+	}
+
+	async function startHealthPolling() {
+		stopHealthPolling();
+
+		// immediate run
+		await updateHealthUiOnce();
+
+		healthIntervalId = setInterval(updateHealthUiOnce, 5000);
+		}
+
+		function stopHealthPolling() {
+		if (healthIntervalId) clearInterval(healthIntervalId);
+		healthIntervalId = null;
+		}
+	
+	let healthInFlight = false;
+
+	async function updateHealthUiOnce() {
+		const mode = getUiMode();
+		if (mode !== "form") return;
+		if (healthInFlight) return;
+
+		healthInFlight = true;
+		try {
+			setStartEnabled(false, "Fetching credentials / checking service...");
+			const h = await checkHealth();
+			const msg = h?.message || h?.error || "Health check failed";
+			setStartEnabled(!!h?.ok, `${msg} (${h?.baseUrl || "unknown"})`);
+		} finally {
+			healthInFlight = false;
+		}
+	}
+
 	function isLocked() {
 		return sessionStorage.getItem(KEY_LOCK) === "1";
 	}
@@ -71,9 +135,13 @@ if (window.top !== window) {
 	function getUiMode() {
 		return sessionStorage.getItem(KEY_UI_MODE) || "form";
 	}
+
 	function setUiMode(mode) {
 		sessionStorage.setItem(KEY_UI_MODE, mode);
 		renderModal();
+
+		if (mode === "form") startHealthPolling();
+		else stopHealthPolling();
 	}
 
 	function getLastStatus() {
@@ -172,7 +240,7 @@ if (window.top !== window) {
 			setUiMode(isLocked() ? "status" : "form");
 			openModal();
 			primeEmailField();
-			renderModal();
+			//renderModal();
 		});
 
 		sel.insertAdjacentElement("afterend", btn);
@@ -265,6 +333,7 @@ if (window.top !== window) {
 		const m = document.getElementById("mauhelper-modal");
 		if (m) m.style.display = "none";
 		closeOverlay();
+		stopHealthPolling();
 	}
 
 	function removeModal() {
@@ -529,7 +598,17 @@ ${esc(logLines.length ? logLines.map((l) => `• ${l}`).join("\n") : "• Waitin
 				}
 			});
 
-			startBtn?.addEventListener("click", () => {
+			startBtn?.addEventListener("click", async () => {
+				const h = await checkHealth();
+
+				if (!h?.ok) {
+					const msg = h?.message || h?.error || "Health check failed";
+					setLastStatus(`Cannot start: ${msg} (${h?.baseUrl || "unknown"})`);
+					appendLog(`Cannot start: ${msg} (${h?.baseUrl || "unknown"})`);
+					updateStatusUI();
+					return;
+				}
+
 				const rawUser = userInput?.value?.trim() || "";
 				const fixed = normalizeUserToEmail(rawUser);
 
