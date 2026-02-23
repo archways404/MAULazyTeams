@@ -1,5 +1,6 @@
 import { Temporal } from "@js-temporal/polyfill";
 import { TZ } from "../shared/constants.js";
+import { COMP_TYPE_MAP } from "./compMap.js";
 
 const SPLIT_HOUR = 19;
 
@@ -12,7 +13,7 @@ function splitAtHour(startZdt, endZdt, hour) {
   const parts = [];
   let cursor = startZdt;
 
-  while (cursor < endZdt) {
+  while (Temporal.ZonedDateTime.compare(cursor, endZdt) < 0) {
     const daySplit = cursor.with({
       hour,
       minute: 0,
@@ -23,7 +24,7 @@ function splitAtHour(startZdt, endZdt, hour) {
     // Next boundary is either the split time (if still ahead today) or end of this segment
     let nextBoundary;
 
-    if (cursor < daySplit) {
+   if (Temporal.ZonedDateTime.compare(cursor, daySplit) < 0) {
       nextBoundary = Temporal.ZonedDateTime.compare(endZdt, daySplit) < 0 ? endZdt : daySplit;
       parts.push({ start: cursor, end: nextBoundary, part: "pre" });
     } else {
@@ -107,6 +108,8 @@ export function normalizeShift(shift) {
     const weekend = isWeekend(start);   // per segment
     const { category, overallType } =
       categorize({ weekend, part, isSplit });
+    
+    const compTypeValue = COMP_TYPE_MAP[category];
 
     return {
       ShiftTitle: title,
@@ -121,6 +124,8 @@ export function normalizeShift(shift) {
       category,
       overallType,
       weekend,
+
+      compTypeValue,
 
       splitAtHour: SPLIT_HOUR,
       segment: part,

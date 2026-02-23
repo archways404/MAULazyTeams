@@ -102,9 +102,19 @@ export async function runAutomationIfPlanned(ui) {
     }
 
     const plan = loadPlan();
-    if (!plan) {
-      ui?.status?.("error", "No plan found");
-      ui?.setUiMode?.("form");
+    const d = plan?.dates?.length ?? 0;
+    const h = plan?.hours?.length ?? 0;
+    const c = plan?.compTypeValues?.length ?? 0;
+
+    if (!d || !h || !c) {
+      ui?.status?.("error", `Plan invalid: dates=${d}, hours=${h}, compTypeValues=${c}`);
+      ui?.setUiMode?.("error");
+      return;
+    }
+
+    if (d !== h || d !== c) {
+      ui?.status?.("error", `Plan length mismatch: dates=${d}, hours=${h}, compTypeValues=${c}`);
+      ui?.setUiMode?.("error");
       return;
     }
 

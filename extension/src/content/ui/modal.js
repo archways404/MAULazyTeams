@@ -323,8 +323,9 @@ export function ensureModalSystem() {
 export function setupInjectButton() {
   if (document.getElementById("mauhelper-btn")) return;
 
-  const visaBtn = document.querySelector(
-    'input[type="submit"][value="Visa timlön"], input[type="submit"][title="Visa timlön"]'
+ const visaBtn = document.querySelector(
+    'input[type="submit"].button.wide[value="Kontering"][title="Kontering"],' +
+    'input[type="submit"][name="actionButtonText[11].valueString"][value="Kontering"]'
   );
   if (!visaBtn) return;
 

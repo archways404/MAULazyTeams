@@ -1,30 +1,36 @@
 export function hasNyRad() {
-  return !!document.querySelector('input[type="submit"][value="Ny rad"].button.wide');
+  return !!document.querySelector('input[type="submit"].button.wide[value="Ny rad"]');
 }
 
 export function getAnchorSelect() {
-  return document.querySelector('select[title="Typ av ersättning"]');
+  return document.querySelector(
+    'select[title="Utfört arbete (välj)"], select[name="falt[7].valueString"]'
+  );
 }
 
 export function findDateInputs() {
   return Array.from(
-    document.querySelectorAll('input[type="text"][title="Datum"].kalender'),
+    document.querySelectorAll('input[type="text"].kalender[title^="Datum"]')
   );
 }
 
 export function findHoursInputs() {
   return Array.from(
-    document.querySelectorAll('input[type="text"][title="Antal timmar"]'),
+    document.querySelectorAll('input[type="text"][title^="Antal timmar"]')
   );
 }
 
 export function findCompTypeSelects() {
-  return Array.from(document.querySelectorAll('select[title="Typ av ersättning"]'));
+  return Array.from(
+    document.querySelectorAll(
+      'select[title="Utfört arbete (välj)"], select[name="falt[7].valueString"]'
+    )
+  );
 }
 
 export function findAllNyRadButtons() {
   return Array.from(
-    document.querySelectorAll('input[type="submit"][value="Ny rad"].button.wide'),
+    document.querySelectorAll('input[type="submit"].button.wide[value="Ny rad"]')
   );
 }
 
