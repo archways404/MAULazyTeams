@@ -323,41 +323,63 @@ export function ensureModalSystem() {
 export function setupInjectButton() {
   if (document.getElementById("mauhelper-btn")) return;
 
-  const visaBtn = document.querySelector(
-    'input[type="submit"][value="Visa timlön"], input[type="submit"][title="Visa timlön"]'
+  const konteringBtn = document.querySelector(
+    'input[type="submit"].button.wide[value="Kontering"],' +
+      'input[type="submit"][name="actionButtonText[11].valueString"][value="Kontering"],' +
+      'input[type="submit"][title="Kontering"][value="Kontering"]'
   );
-  if (!visaBtn) return;
+  if (!konteringBtn) return;
 
-  // inner td that holds the "Visa timlön" input
-  const innerTd = visaBtn.closest("td");
+  const innerTd = konteringBtn.closest("td");
   if (!innerTd) return;
 
-  // outer td (colspan=4) that contains the whole small table
-  const outerTd = innerTd.closest('td[colspan="4"]');
-  if (!outerTd) return;
-
-  // make outerTd the positioning context
-  outerTd.style.position = "relative";
+  const outerTd = innerTd.closest('td[colspan="4"]') || innerTd;
+  if (getComputedStyle(outerTd).position === "static") {
+    outerTd.style.position = "relative";
+  }
 
   const btn = document.createElement("button");
   btn.id = "mauhelper-btn";
   btn.type = "button";
-  btn.textContent = "MAULazyTeams";
+  btn.title = "Open MAULazyTeams";
+  btn.setAttribute("aria-label", "Open MAULazyTeams");
   btn.style.cssText = `
-    position: absolute;
-    right: 6px;
-    top: 50%;
-    transform: translateY(-50%);
-    padding: 6px 10px;
-    cursor: pointer;
-    font-weight: 800;
-    border-radius: 10px;
-    border: 1px solid rgba(255,255,255,.18);
-    background: rgba(12,12,12,.95);
-    color: #fff;
-    box-shadow: 0 4px 12px rgba(0,0,0,.35);
-    z-index: 5;
+    position:absolute;
+    right:6px;
+    top:70%;
+    transform:translateY(-50%) scale(1);
+    width:64px;
+    height:64px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    border: none;
+    background:transparent;
+    padding:0;
+    z-index:5;
+    transition: transform .12s ease;
   `;
+
+  const img = document.createElement("img");
+  img.src = chrome.runtime.getURL("icons/icon512.png");
+  img.alt = "MAULazyTeams";
+  img.style.cssText = `
+    width:56px;
+    height:56px;
+    display:block;
+    pointer-events:none;
+    user-select:none;
+  `;
+  btn.appendChild(img);
+
+  btn.addEventListener("mouseenter", () => {
+    btn.style.transform = "translateY(-50%) scale(1.08)";
+  });
+
+  btn.addEventListener("mouseleave", () => {
+    btn.style.transform = "translateY(-50%) scale(1)";
+  });
 
   btn.addEventListener("click", () => {
     uiApi.ensureModal();
@@ -367,7 +389,7 @@ export function setupInjectButton() {
   });
 
   outerTd.appendChild(btn);
-  console.log("[MAULazyTeams] Injected button (outer colspan td, right)");
+  console.log("[MAULazyTeams] Injected icon button");
 }
 
 

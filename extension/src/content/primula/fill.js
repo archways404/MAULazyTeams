@@ -65,7 +65,7 @@ function expectedRow(plan, i) {
   return {
     date: norm(plan.dates?.[i]),
     hours: normHours(plan.hours?.[i]),
-    comp: norm(plan.compTypeValue ?? "0214"),
+    comp: norm(plan.compTypeValues?.[i] ?? "MaUskrv1"),
   };
 }
 
@@ -100,7 +100,11 @@ export async function verifyRow(plan, i, { retries = 3 } = {}) {
  * fillRows(plan, { status }) – status(phase, message, extra?)
  */
 export async function fillRows(plan, { status } = {}) {
-  const total = Math.min(plan.dates?.length ?? 0, plan.hours?.length ?? 0);
+  const total = Math.min(
+    plan.dates?.length ?? 0,
+    plan.hours?.length ?? 0,
+    plan.compTypeValues?.length ?? 0,
+  );
   status?.("running", `Filling rows (0/${total})`);
 
   const mismatches = [];
