@@ -1,12 +1,12 @@
-# MAULazyTeams Privacy Policy
+# PrimAssist Privacy Policy
 
 Last updated: February 2026
 
-MAULazyTeams is a browser extension designed to automate shift management within Malmö University’s Primula system.
+PrimAssist is a browser extension designed to automate shift management within Malmö University’s Primula system.
 
 ## Data Collection
 
-MAULazyTeams does not collect, sell, or share personal data for marketing or analytics purposes.
+PrimAssist does not collect, sell, or share personal data for marketing or analytics purposes.
 
 The extension processes the following types of data strictly for functional purposes:
 	•	The user’s MAU ID or email address, which is transmitted to the configured MAULazyTeams backend API to retrieve shift information.

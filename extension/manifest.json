@@ -1,7 +1,7 @@
 {
 	"manifest_version": 3,
-	"name": "MAULazyTeams",
-	"version": "0.0.4",
+	"name": "PrimAssist",
+	"version": "1.0.0",
 	"browser_specific_settings": {
     "gecko": {
 		"id": "archways@gmx.us",
@@ -17,7 +17,7 @@
     	"128": "icons/icon128.png"
   	},
 	"action": {
-		"default_title": "MAULazyTeams",
+		"default_title": "PrimAssist",
 		"default_popup": "popup/popup.html",
 		"default_icon": {
 			"16": "icons/icon16.png",

@@ -1,5 +1,5 @@
 {
-	"name": "maulazyteams",
+	"name": "primassist",
 	"version": "1.0.0",
 	"description": "",
 	"main": "main.js",
@@ -9,15 +9,15 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/archways404/MAULazyTeams.git"
+		"url": "git+https://github.com/archways404/PrimAssist.git"
 	},
 	"keywords": [],
 	"author": "",
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/archways404/MAULazyTeams/issues"
+		"url": "https://github.com/archways404/PrimAssist/issues"
 	},
-	"homepage": "https://github.com/archways404/MAULazyTeams#readme",
+	"homepage": "https://github.com/archways404/PrimAssist#readme",
 	"dependencies": {
 		"@fastify/cors": "^11.2.0",
 		"@js-temporal/polyfill": "^0.5.1",

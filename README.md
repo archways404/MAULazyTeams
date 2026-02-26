@@ -2,9 +2,9 @@
   <img src="https://raw.githubusercontent.com/archways404/MAULazyTeams/master/extension/icons/icon256.png" width="180" />
 </p>
 
-<h1 align="center">MAULazyTeams</h1>
+<h1 align="center">PrimAssist</h1>
 
-**MAULazyTeams** is a lightweight browser extension that simplifies
+**PrimAssist** is a lightweight browser extension that simplifies
 shift management in MAU Primula.
 
 It automates repetitive steps, fetches your shifts, and makes your
@@ -30,11 +30,11 @@ https://github.com/user-attachments/assets/d4aa6b6b-2000-4e40-ab38-1c8bda8013aa
 - Local storage support
 - Works with production and local API environments
 
-## Why MAULazyTeams?
+## Why PrimAssist?
 
 Managing shifts manually can be repetitive and time-consuming.
 
-MAULazyTeams automates the boring parts so you can: - Save time - Avoid
+PrimAssist automates the boring parts so you can: - Save time - Avoid
 mistakes - Stay organized
 
 Built for Malmö University workflows.
@@ -57,7 +57,7 @@ Built for Malmö University workflows.
 
 ## Required Permissions
 
-MAULazyTeams requires:
+PrimAssist requires:
 
 -   `storage`
 -   `tabs`
@@ -80,10 +80,10 @@ All data stays in your browser or your configured backend.
 
 ## Backend
 
-This extension connects to the MAULazyTeams API backend for
+This extension connects to the PrimAssist API backend for
 authentication and shift retrieval.
 
-Backend repository: https://github.com/archways404/MAULazyTeams
+Backend repository: https://github.com/archways404/PrimAssist
 
 ## Tech Stack
 
@@ -95,7 +95,7 @@ Backend repository: https://github.com/archways404/MAULazyTeams
 
 ## 📦 Version
 
-Current Version: 0.0.1
+Current Version: 1.0.0
 
 ## License
 
