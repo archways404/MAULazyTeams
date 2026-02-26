@@ -20,7 +20,10 @@ workflow faster --- so you don't have to.
 
 ## Demo
 
-https://github.com/user-attachments/assets/d4aa6b6b-2000-4e40-ab38-1c8bda8013aa
+https://github.com/user-attachments/assets/3d8c17de-9f23-4536-92a5-6fe4300b7cc7
+
+
+
 
 ## Features
 
