@@ -341,8 +341,8 @@ export function setupInjectButton() {
   const btn = document.createElement("button");
   btn.id = "mauhelper-btn";
   btn.type = "button";
-  btn.title = "Open MAULazyTeams";
-  btn.setAttribute("aria-label", "Open MAULazyTeams");
+  btn.title = "Open PrimAssist";
+  btn.setAttribute("aria-label", "Open PrimAssist");
   btn.style.cssText = `
     position:absolute;
     right:6px;
@@ -363,7 +363,7 @@ export function setupInjectButton() {
 
   const img = document.createElement("img");
   img.src = chrome.runtime.getURL("icons/icon512.png");
-  img.alt = "MAULazyTeams";
+  img.alt = "PrimAssist";
   img.style.cssText = `
     width:56px;
     height:56px;
@@ -389,7 +389,7 @@ export function setupInjectButton() {
   });
 
   outerTd.appendChild(btn);
-  console.log("[MAULazyTeams] Injected icon button");
+  console.log("[PrimAssist] Injected icon button");
 }
 
 
